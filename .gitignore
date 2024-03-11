@@ -6,3 +6,4 @@
 pom.xml
 replit.nix
 target/dependency
+.breakpoints
