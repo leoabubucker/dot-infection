@@ -4,6 +4,7 @@ public class Grid {
     private final int gridWidth;
     private static final String ANSI_RED = "\u001b[31m";
     private static final String ANSI_RESET = "\u001b[0m";
+    private static final String ANSI_BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
 
     Grid(int initGridHeight, int initGridWidth){
         gridHeight = initGridHeight;
@@ -12,7 +13,6 @@ public class Grid {
 
     public void generateGrid(){
         int[][] coords = new int[gridWidth*gridHeight][2];
-        int test = 0;
         int xCoord = 0;
         int yCoord = 0;
         for(int i = 0; i < coords.length; i++){
@@ -26,13 +26,12 @@ public class Grid {
             }
         }
         for(int[] i : coords){
-            Dot d = new Dot(i[0], i[1]);
+           new Dot(i[0], i[1]);
         }
     }
 
     public void displayGrid(){
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        HelperFunctions.clearConsole();
         int lastY = 0;
         for(Dot d : Dot.returnAllDots()){
             if(d.yCoord > lastY){
@@ -58,9 +57,13 @@ public class Grid {
 
     public void runSimulation(){
         while(true){
+            boolean allWhite = true;
             ArrayList<int[]> vulnerableDots = new ArrayList<int[]>();
+            vulnerableDots.clear();
             for(Dot d: Dot.returnAllDots()){
                 if(d.color.equals(ANSI_RED)){
+                    allWhite = false;
+                    d.burningCount++;
                     if(d.xCoord > 0){
                         vulnerableDots.add(new int[]{d.xCoord-1, d.yCoord});
                     }
@@ -73,24 +76,35 @@ public class Grid {
                     if(d.yCoord < gridHeight){
                         vulnerableDots.add(new int[]{d.xCoord, d.yCoord + 1});
                     }
+                    if(d.burningCount > 15){
+                        d.burningCount = 0;
+                        d.color = ANSI_BLACK_BOLD_BRIGHT;
+                    }
+                }
+                else if(d.color.equals(ANSI_BLACK_BOLD_BRIGHT)){
+                    allWhite = false;
+                    d.burntCount++;
+                    if(d.burntCount > 15){
+                        d.burntCount = 0;
+                        d.color = ANSI_RESET;
+                    }
                 }
             }
+            if(allWhite){
+                startSimulation();
+                return;
+            }
             for(int[] coords : vulnerableDots){
-                int infectionChance = (int) ((Math.random() * 10) + 1); //1-10
-                if(infectionChance <= 3){ //30% Chance
-                    for(Dot d: Dot.returnAllDots()){
-                        if(d.xCoord == coords[0] && d.yCoord == coords[1]){
+                for(Dot d: Dot.returnAllDots()){
+                    if(d.xCoord == coords[0] && d.yCoord == coords[1] && d.color.equals(ANSI_RESET)){
+                        int infectionChance = (int) ((Math.random() * 10) + 1); //1-10
+                        if(infectionChance <= 3){ //30% Chance
                             d.changeDotColor(ANSI_RED);
                         }
                     }
                 }
             }
-            try{
-                Thread.sleep(1000);
-            }
-            catch(InterruptedException e){
-                e.printStackTrace();
-            }
+            HelperFunctions.wait(1);
             displayGrid();
         }
     }
