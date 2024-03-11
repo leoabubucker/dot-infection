@@ -1,1 +1,8 @@
 *.class
+.settings
+.classpath
+.project
+.replit
+pom.xml
+replit.nix
+target/dependency
