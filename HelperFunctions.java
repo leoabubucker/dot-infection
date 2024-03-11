@@ -1,7 +1,7 @@
 public class HelperFunctions {
-    public static void wait(int seconds){
+    public static void wait(int miliseconds){
         try{
-            Thread.sleep(seconds * 1000);
+            Thread.sleep(miliseconds);
         }
         catch(InterruptedException e){
             e.printStackTrace();

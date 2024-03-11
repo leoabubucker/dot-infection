@@ -3,6 +3,10 @@ import java.util.ArrayList;
 public class Grid {
     private final int gridHeight;
     private final int gridWidth;
+    private final int infectionRate;
+    private final int maxBurnCount;
+    private final int maxBurntCount;
+    private final int tickRate;
     private static final String ANSI_RED = "\u001b[31m";
     private static final String ANSI_RESET = "\u001b[0m";
     private static final String ANSI_BLACK_BOLD_BRIGHT = "\033[1;90m"; // BLACK
@@ -10,6 +14,19 @@ public class Grid {
     Grid(int initGridHeight, int initGridWidth){
         gridHeight = initGridHeight;
         gridWidth = initGridWidth;
+        infectionRate = 3;
+        maxBurnCount = 15000;
+        maxBurntCount = 15000;
+        tickRate = 1000;
+    }
+
+    Grid(int initGridHeight, int initGridWidth, int initInfectionRate, int initMaxBurnCount, int initMaxBurntCount, int initTickRate){
+        gridHeight = initGridHeight;
+        gridWidth = initGridWidth;
+        infectionRate = initInfectionRate;
+        maxBurnCount = initMaxBurnCount;
+        maxBurntCount = initMaxBurntCount;
+        tickRate = initTickRate;
     }
 
     public void generateGrid(){
@@ -39,7 +56,7 @@ public class Grid {
                 lastY = d.yCoord;
                 System.out.println();
             }
-            System.out.print(d.color + "." + ANSI_RESET + "   ");
+            System.out.print(d.color + "." + ANSI_RESET + " ");//1 space
         }
     }
 
@@ -64,7 +81,7 @@ public class Grid {
             for(Dot d: Dot.returnAllDots()){
                 if(d.color.equals(ANSI_RED)){
                     allWhite = false;
-                    d.burningCount++;
+                    d.burningCount+= tickRate;
                     if(d.xCoord > 0){
                         vulnerableDots.add(new int[]{d.xCoord-1, d.yCoord});
                     }
@@ -77,15 +94,15 @@ public class Grid {
                     if(d.yCoord < gridHeight){
                         vulnerableDots.add(new int[]{d.xCoord, d.yCoord + 1});
                     }
-                    if(d.burningCount > 15){
+                    if(d.burningCount > maxBurnCount){
                         d.burningCount = 0;
                         d.color = ANSI_BLACK_BOLD_BRIGHT;
                     }
                 }
                 else if(d.color.equals(ANSI_BLACK_BOLD_BRIGHT)){
                     allWhite = false;
-                    d.burntCount++;
-                    if(d.burntCount > 15){
+                    d.burntCount+=tickRate;
+                    if(d.burntCount > maxBurntCount){
                         d.burntCount = 0;
                         d.color = ANSI_RESET;
                     }
@@ -99,13 +116,13 @@ public class Grid {
                 for(Dot d: Dot.returnAllDots()){
                     if(d.xCoord == coords[0] && d.yCoord == coords[1] && d.color.equals(ANSI_RESET)){
                         int infectionChance = (int) ((Math.random() * 10) + 1); //1-10
-                        if(infectionChance <= 3){ //30% Chance
+                        if(infectionChance <= infectionRate){ //30% Chance
                             d.changeDotColor(ANSI_RED);
                         }
                     }
                 }
             }
-            HelperFunctions.wait(1);
+            HelperFunctions.wait(tickRate);
             displayGrid();
         }
     }
