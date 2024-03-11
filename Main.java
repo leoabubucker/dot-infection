@@ -17,7 +17,7 @@ public class Main{
       System.out.print("\n\nNext, please enter the infection/spread rate (an integer from 1-10 representing a 10-100% chance of infection): ");
       int infectionRate = CONSOLE.nextInt();
 
-      System.out.print("\nNext, please enter the time that a red dot should turn grey (burnt). Use an integer that represents the number of miliseconds (1 second = 1000 miliseconds): ");
+      System.out.println("\nNext, please enter the time that a red dot should turn grey (burnt). Use an integer that represents the number of miliseconds (1 second = 1000 miliseconds): ");
       int maxBurnCount = CONSOLE.nextInt();
       System.out.print("\nNext, please enter the time that a grey dot should turn white (reset). Use an integer that represents the number of miliseconds (1 second = 1000 miliseconds): ");
       int maxBurntCount = CONSOLE.nextInt();
